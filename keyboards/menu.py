@@ -6,9 +6,6 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
-from forms.app_states import AppState
-from aiogram.fsm.context import FSMContext
-from aiogram.filters import Command
 from database import get_user_by_telegram_id
 
 router = Router()
