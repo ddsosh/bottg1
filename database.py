@@ -1,4 +1,6 @@
 import aiosqlite
+import hashlib
+import os
 
 DB_NAME = "movies.db"
 
@@ -37,12 +39,17 @@ async def init_db():
 # ------------------------------------------------------------------------------------
 
 async def add_user(telegram_id, login, password):
+    password_hash = _hash_password(password)
     async with aiosqlite.connect(DB_NAME) as db:
-        await db.execute("""
-            INSERT INTO users (telegram_id, login, password)
-            VALUES (?, ?, ?)
-        """, (telegram_id, login, password))
-        await db.commit()
+        try:
+            await db.execute("""
+                INSERT INTO users (telegram_id, login, password)
+                VALUES (?, ?, ?)
+            """, (telegram_id, login, password_hash))
+            await db.commit()
+            return True
+        except aiosqlite.IntegrityError:
+            return False
 
 
 async def get_user_by_telegram_id(telegram_id):
@@ -52,6 +59,13 @@ async def get_user_by_telegram_id(telegram_id):
                 """, (telegram_id,))
         result = await cursor.fetchone()
         return result
+
+
+def _hash_password(password: str) -> str:
+    salt = os.urandom(16)
+    iterations = 100_000
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iterations)
+    return f"pbkdf2_sha256${iterations}${salt.hex()}${digest.hex()}"
 
 
 # ------------------------------------------------------------------------------------

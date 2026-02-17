@@ -17,6 +17,8 @@ dp = Dispatcher()
 
 
 async def main():
+    if not TOKEN:
+        raise RuntimeError("BOT_TOKEN is not set")
     bot = Bot(token=TOKEN)
     await init_db()
     dp.include_router(auth_router)

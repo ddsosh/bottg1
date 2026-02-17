@@ -8,6 +8,11 @@ venv/
 
 # Environment files
 .env
+.env.*
+!.env.example
+
+# Local database
+movies.db
 
 # IDE / editor
 .idea/workspace.xml

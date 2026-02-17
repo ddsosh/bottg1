@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -22,21 +22,41 @@ async def start(message: Message, state: FSMContext):
 
 @router.message(AppState.login)
 async def process_login(message: Message, state: FSMContext):
-    await state.update_data(login=message.text)
+    login = (message.text or "").strip()
+    if len(login) < 3 or len(login) > 32:
+        await message.answer("Login must be 3-32 chars")
+        return
+    await state.update_data(login=login)
     await message.answer("Enter your password")
     await state.set_state(AppState.pas)
 
 @router.message(AppState.pas)
 async def process_password(message: Message, state: FSMContext):
     data = await state.get_data()
-    login = data["login"]
-    password = message.text
+    login = data.get("login")
+    password = (message.text or "").strip()
 
-    await add_user(
+    if not login:
+        await state.set_state(AppState.login)
+        await message.answer("Enter login first")
+        return
+    if len(password) < 6 or len(password) > 64:
+        await message.answer("Password must be 6-64 chars")
+        return
+
+    created = await add_user(
         telegram_id=message.from_user.id,
         login=login,
         password=password,
     )
+    if not created:
+        await state.set_state(AppState.main)
+        await message.answer(
+            "You are already registered\nChoose section",
+            reply_markup=get_main_reply_menu(),
+        )
+        return
+
     await state.set_state(AppState.main)
     await message.answer("Successful\nYou have been logged in\nChoose section",
                          reply_markup=get_main_reply_menu())
