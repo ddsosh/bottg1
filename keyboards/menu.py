@@ -56,5 +56,4 @@ def get_main_inline_menu():
 async def get_current_user(message: Message):
     return await get_user_by_telegram_id(message.from_user.id)
 
-# ------------------------------------------------
 
