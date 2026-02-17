@@ -61,7 +61,7 @@ async def note_date(message: Message, state: FSMContext):
 
     await add_note(user[0], title, due_date)
 
-    await message.answer("✅")
+    await message.answer("OK")
 
     await state.clear()
     await state.set_state(AppState.notes_menu)
@@ -88,7 +88,7 @@ async def list_note_handler(message: Message, state: FSMContext):
 
     for index, note in enumerate(notes, start=1):
         note_id, user_id, title, due_date, created_at = note
-        text += f"{index}. {title} — {due_date}\n"
+        text += f"{index}. {title} - {due_date}\n"
 
         note_map[index] = note_id
 
@@ -130,7 +130,7 @@ async def delete_by_number(message: Message, state: FSMContext):
 
     await delete_note(user[0], note_id)
 
-    await message.answer("✅ Deleted")
+    await message.answer("OK Deleted")
 
     await state.set_state(AppState.notes_menu)
 
@@ -155,7 +155,7 @@ async def skip_note_date(callback: CallbackQuery, state: FSMContext):
 
     await add_note(user[0], title, None)
 
-    await callback.message.edit_text("✅ Note saved without date")
+    await callback.message.edit_text("OK Note saved without date")
     await callback.answer()
 
     await state.clear()
@@ -171,4 +171,5 @@ async def skip_note_date(callback: CallbackQuery, state: FSMContext):
 async def back_handler(message: Message, state: FSMContext):
     await state.set_state(AppState.main)
     await message.answer("Main menu", reply_markup=get_main_reply_menu())
+
 
