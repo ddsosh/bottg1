@@ -28,8 +28,8 @@ async def movie_title(message: Message, state: FSMContext):
     if not title:
         await message.answer("Title cannot be empty")
         return
-    if len(title) > 120:
-        await message.answer("Title is too long (max 120)")
+    if len(title) > 50:
+        await message.answer("Title is too long (max 50)")
         return
 
     await state.update_data(title=title)

@@ -8,6 +8,8 @@ from handlers.auth import router as auth_router
 from handlers.movies import router as movies_router
 from keyboards.menu import router as menu_router
 from handlers.notes import router as notes_router
+from handlers.subs import router as subs_router
+from scheduler import start_scheduler
 
 load_dotenv()
 
@@ -25,7 +27,9 @@ async def main():
     dp.include_router(movies_router)
     dp.include_router(menu_router)
     dp.include_router(notes_router)
+    dp.include_router(subs_router)
     print("Bot started")
+    start_scheduler(bot)
     await dp.start_polling(bot)
 
 if __name__ == '__main__':

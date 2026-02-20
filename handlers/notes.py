@@ -28,8 +28,8 @@ async def note_title(message: Message, state: FSMContext):
     if not title:
         await message.answer("Title cannot be empty")
         return
-    if len(title) > 120:
-        await message.answer("Title is too long (max 120)")
+    if len(title) > 50:
+        await message.answer("Title is too long (max 50)")
         return
 
     await state.update_data(title=title)
@@ -99,7 +99,7 @@ async def list_note_handler(message: Message, state: FSMContext):
 @router.message(AppState.notes_menu, F.text.lower() == "del note")
 async def delete_start(message: Message, state: FSMContext):
     await state.set_state(AppState.delete_note_number)
-    await message.answer("Enter number to delete:")
+    await message.answer("Enter number to delete:", reply_markup=ReplyKeyboardRemove())
 
 
 @router.message(AppState.delete_note_number)
@@ -137,7 +137,7 @@ async def delete_by_number(message: Message, state: FSMContext):
 @router.callback_query(F.data.startswith("del_note_"))
 async def delete_callback(callback: CallbackQuery):
     note_id = int(callback.data.split("_")[2])
-    user = await get_user_by_telegram_id(callback.from_user.id)
+    user = await get_current_user(callback)
     if not user:
         await callback.answer("error(user not found) /start")
         return
@@ -151,13 +151,15 @@ async def delete_callback(callback: CallbackQuery):
 async def skip_note_date(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     title = data.get("title")
+
     if not title:
         await state.set_state(AppState.add_note_title)
         await callback.message.answer("Enter title first")
         await callback.answer()
         return
 
-    user = await get_user_by_telegram_id(callback.from_user.id)
+    user = await get_current_user(callback)
+
     if not user:
         await state.set_state(AppState.main)
         await callback.message.answer("error(user not found) /start", reply_markup=get_main_reply_menu())

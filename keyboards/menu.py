@@ -14,7 +14,7 @@ router = Router()
 def get_main_reply_menu():
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="movies"), KeyboardButton(text="notes")]
+            [KeyboardButton(text="movies"), KeyboardButton(text="notes"), KeyboardButton(text="subs")],
         ],
         resize_keyboard=True
     )
@@ -42,6 +42,15 @@ def get_main_reply_notes():
     )
     return keyboard
 
+def get_main_reply_subs():
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="add sub"), KeyboardButton(text="list subs")],
+            [KeyboardButton(text="del sub"), KeyboardButton(text="back")],
+        ]
+    )
+    return keyboard
+#-------------------------------------------------------------------------------
 
 def get_main_inline_menu():
     keyboard = InlineKeyboardMarkup(
@@ -53,7 +62,9 @@ def get_main_inline_menu():
     )
     return keyboard
 
-async def get_current_user(message: Message):
-    return await get_user_by_telegram_id(message.from_user.id)
+#-------------------------------------------------------------------------------
+
+async def get_current_user(event):
+    return await get_user_by_telegram_id(event.from_user.id)
 
 
